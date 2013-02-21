@@ -22,12 +22,14 @@ class MoviesController < ApplicationController
     end
     
     if params[:sort] != session[:sort]
+      puts "in 1"
       session[:sort] = sort
       flash.keep
       redirect_to :sort => sort, :ratings => @selected_ratings and return
     end
 
-    if params[:ratings] != session[:ratings] and @selected_ratings != {}
+    if params[:ratings] != session[:ratings] and @selected_ratings != {}      
+      puts "in 2"
       session[:sort] = sort
       session[:ratings] = @selected_ratings
       flash.keep
@@ -52,11 +54,10 @@ class MoviesController < ApplicationController
 
   def Similar_Movies
     @movie = Movie.find params[:id]
-    if @movie.director != nil && @movie.director != ""
-      @movies = Movie.where("director = ?", @movie.director)
-    else
+    @movies = @movie.find_movies_by_director
+    if @movies == nil
       flash[:notice] = "'#{@movie.title}' has no director info."
-      redirect_to movies_path
+      redirect_to "/movies"
     end
   end
 
